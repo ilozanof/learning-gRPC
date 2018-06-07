@@ -1,0 +1,68 @@
+/*
+ * GRADLE Build file
+ * 
+ */
+
+buildscript {
+    ext.kotlin_version = '1.2.31'
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.0'
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'kotlin'
+apply plugin: 'com.google.protobuf'
+
+description = 'An example of how to use Google Proto Buffers Library with Java'
+sourceCompatibility = '1.8'
+
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile "junit:junit:4.12"
+    compile     "com.google.protobuf:protobuf-java:3.5.1"
+    compile     "io.grpc:grpc-stub:1.12.0"
+    compile     "io.grpc:grpc-protobuf:1.12.0"
+    compile     "io.grpc:grpc-netty:1.12.0"
+    compile     "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    compile     "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+}
+
+sourceSets {
+    main {
+        proto {
+            srcDir 'src/test/resources'
+            include '**/*.proto'
+        }
+        java {
+            srcDirs 'src/main/java', 'src/generated/main/java', 'src/generated/main/grpc'
+        }
+    }
+}
+
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:3.2.0"
+    }
+    generateProtoTasks.generatedFilesBaseDir = 'src/generated'
+    plugins {
+        grpc {
+            artifact = 'io.grpc:protoc-gen-grpc-java:1.4.0'
+        }
+    }
+    generateProtoTasks {
+        all()*.plugins {
+            grpc {}
+        }
+    }
+}
